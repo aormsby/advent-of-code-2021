@@ -3,13 +3,12 @@ package d2_Dive
 import util.Input
 import util.Output
 
-const val POSITION = "position"
-const val DEPTH = "depth"
-const val AIM = "aim"
+private const val POSITION = "position"
+private const val DEPTH = "depth"
+private const val AIM = "aim"
 
-const val UP = "up"
-const val DOWN = "down"
-//const val FORWARD = "forward"
+private const val UP = "up"
+private const val DOWN = "down"
 
 fun main() {
     Output.day(2, "Dive!")

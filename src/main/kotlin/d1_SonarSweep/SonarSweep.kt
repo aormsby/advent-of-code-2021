@@ -8,26 +8,14 @@ fun main() {
 
     val depthList = Input.parseLinesTo<Int>("/input/d1_sea_floor_depths.txt")
 
-    val deepenings = foldToInt(depthList)
-    Output.part(1, "Deepenings", deepenings)
-
-    val threeDeepenings = foldToInt(mapToThreeSums(depthList))
-    Output.part(2, "3-Deepenings", threeDeepenings)
+    Output.part(1, "Deepenings", depthList.twoWindowSlide())
+    Output.part(2, "Sliding Deepenings", depthList.threeWindowSlide())
 }
 
-fun foldToInt(list: List<Int>): Int =
-    list.foldIndexed(0) { i, acc, cur ->
-        list.getOrNull(i - 1)?.let {
-            if (cur > it) acc + 1 else acc
-        } ?: acc
-    }
+fun List<Int>.twoWindowSlide(): Int =
+    this.windowed(2) {
+        it[1] > it[0]
+    }.count { x -> x }  // where x is true
 
-fun mapToThreeSums(list: List<Int>): List<Int> =
-    list.mapIndexedNotNull { i, _ ->
-        if (list.size - i < 3) null
-        else listOf(
-            list[i],
-            list[i + 1],
-            list[i + 2]
-        ).sum()
-    }
+fun List<Int>.threeWindowSlide(): Int =
+    this.windowed(3) { it.sum() }.twoWindowSlide()
