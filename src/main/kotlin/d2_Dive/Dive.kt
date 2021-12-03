@@ -6,8 +6,12 @@ const val POSITION = "position"
 const val DEPTH = "depth"
 const val AIM = "aim"
 
+const val UP = "up"
+const val DOWN = "down"
+//const val FORWARD = "forward"
+
 fun main() {
-    val commands = InputHelper.parseLines("/input/d2_navigation_commands.txt")
+    val commands = InputHelper.parseToPairList<String, Int>("/input/d2_navigation_commands.txt")
 
     val coordinates = mutableMapOf(
         POSITION to 0,
@@ -15,38 +19,37 @@ fun main() {
     )
 
     commands.forEach {
-        val c = it.split(" ")
-        when (c[0]) {
-            "down" -> coordinates.merge(DEPTH, c[1].toInt()) { a, b -> a + b }
-            "up" -> coordinates.merge(DEPTH, c[1].toInt()) { a, b -> (a - b).checkForSurface() }
-            else -> coordinates.merge(POSITION, c[1].toInt()) { a, b -> a + b }
+        when (it.first) {
+            DOWN -> coordinates.merge(DEPTH, it.second) { a, b -> a + b }
+            UP -> coordinates.merge(DEPTH, it.second) { a, b -> (a - b).checkForSurface() }
+            else -> coordinates.merge(POSITION, it.second) { a, b -> a + b }
         }
     }
 
-    println("coordinate product: ${coordinates[POSITION]!! * coordinates[DEPTH]!!}}")
+    println("coordinate product: ${coordinates[POSITION]!! * coordinates[DEPTH]!!}")
 
-    val moreAccurateCoordinates = mutableMapOf(
+    val accurateCoordinates = mutableMapOf(
         POSITION to 0,
         DEPTH to 0,
         AIM to 0
     )
 
     commands.forEach {
-        val c = it.split(" ")
-        when (c[0]) {
-            "down" -> moreAccurateCoordinates.merge(AIM, c[1].toInt()) { a, b -> a + b }
-            "up" -> moreAccurateCoordinates.merge(AIM, c[1].toInt()) { a, b -> a - b }
+        when (it.first) {
+            DOWN -> accurateCoordinates.merge(AIM, it.second) { a, b -> a + b }
+            UP -> accurateCoordinates.merge(AIM, it.second) { a, b -> a - b }
             else -> {
-                moreAccurateCoordinates.merge(POSITION, c[1].toInt()) { a, b -> a + b }
-                moreAccurateCoordinates.merge(
+                accurateCoordinates.merge(POSITION, it.second) { a, b -> a + b }
+                accurateCoordinates.merge(
                     DEPTH,
-                    c[1].toInt()
-                ) { a, b -> a + (b * moreAccurateCoordinates[AIM]!!).checkForSurface() }
+                    it.second
+                ) { a, b -> a + (b * accurateCoordinates[AIM]!!).checkForSurface() }
             }
         }
     }
 
-    println("accurate coordinate product: ${moreAccurateCoordinates[POSITION]!! * moreAccurateCoordinates[DEPTH]!!}")
+    println("accurate coordinate product: ${accurateCoordinates[POSITION]!! * accurateCoordinates[DEPTH]!!}")
 }
 
+// Turns out this was unnecessary... but a great idea!
 fun Int.checkForSurface(): Int = if (this >= 0) this else 0

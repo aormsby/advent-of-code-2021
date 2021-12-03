@@ -4,7 +4,7 @@ import util.InputHelper
 
 fun main() {
     // read input
-    val depthList = InputHelper.parseLinesToInts("/input/d1_sea_floor_depths.txt")
+    val depthList = InputHelper.parseLinesTo<Int>("/input/d1_sea_floor_depths.txt")
 
     // part 1
     val deepenings = foldToInt(depthList)
