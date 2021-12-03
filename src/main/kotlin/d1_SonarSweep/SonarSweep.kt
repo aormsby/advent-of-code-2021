@@ -1,18 +1,18 @@
 package d1_SonarSweep
 
-import util.InputHelper
+import util.Input
+import util.Output
 
 fun main() {
-    // read input
-    val depthList = InputHelper.parseLinesTo<Int>("/input/d1_sea_floor_depths.txt")
+    Output.day(1, "Sonar Sweep")
 
-    // part 1
+    val depthList = Input.parseLinesTo<Int>("/input/d1_sea_floor_depths.txt")
+
     val deepenings = foldToInt(depthList)
-    println("deepenings: $deepenings")
+    Output.part(1, "Deepenings", deepenings)
 
-    //part 2
     val threeDeepenings = foldToInt(mapToThreeSums(depthList))
-    println("three-deepenings: $threeDeepenings")
+    Output.part(2, "3-Deepenings", threeDeepenings)
 }
 
 fun foldToInt(list: List<Int>): Int =

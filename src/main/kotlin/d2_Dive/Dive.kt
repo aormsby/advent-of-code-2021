@@ -1,6 +1,7 @@
 package d2_Dive
 
-import util.InputHelper
+import util.Input
+import util.Output
 
 const val POSITION = "position"
 const val DEPTH = "depth"
@@ -11,7 +12,9 @@ const val DOWN = "down"
 //const val FORWARD = "forward"
 
 fun main() {
-    val commands = InputHelper.parseToPairList<String, Int>("/input/d2_navigation_commands.txt")
+    Output.day(2, "Dive!")
+
+    val commands = Input.parseToPairList<String, Int>("/input/d2_navigation_commands.txt")
 
     val coordinates = mutableMapOf(
         POSITION to 0,
@@ -26,7 +29,7 @@ fun main() {
         }
     }
 
-    println("coordinate product: ${coordinates[POSITION]!! * coordinates[DEPTH]!!}")
+    Output.part(1, "Bad Coordinates", coordinates[POSITION]!! * coordinates[DEPTH]!!)
 
     val accurateCoordinates = mutableMapOf(
         POSITION to 0,
@@ -48,7 +51,7 @@ fun main() {
         }
     }
 
-    println("accurate coordinate product: ${accurateCoordinates[POSITION]!! * accurateCoordinates[DEPTH]!!}")
+    Output.part(1, "Good Coordinates", accurateCoordinates[POSITION]!! * accurateCoordinates[DEPTH]!!)
 }
 
 // Turns out this was unnecessary... but a great idea!

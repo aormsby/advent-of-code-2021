@@ -2,7 +2,7 @@ package util
 
 import java.io.IOException
 
-object InputHelper {
+object Input {
     fun parseLines(filename: String): List<String> =
         this.javaClass.getResourceAsStream(filename)?.bufferedReader()?.readLines()
             ?: throw IOException("read input failed")
