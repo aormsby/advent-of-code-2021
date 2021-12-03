@@ -3,4 +3,5 @@
  */
 fun main() {
     d1_SonarSweep.main()
+    d2_Dive.main()
 }
