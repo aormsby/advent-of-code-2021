@@ -4,4 +4,6 @@
 fun main() {
     d1_SonarSweep.main()
     d2_Dive.main()
+    d3_BinaryDiagnostic.main()
+    d4_GiantSquid.main()
 }

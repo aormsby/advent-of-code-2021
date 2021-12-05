@@ -7,13 +7,26 @@ object Input {
         this.javaClass.getResourceAsStream(filename)?.bufferedReader()?.readLines()
             ?: throw IOException("read input failed")
 
-    inline fun <reified T> parseLinesTo(filename: String): List<T> =
-        parseLines(filename).map {
-            when (T::class) {
-                Int::class -> it.toInt() as T
-                else -> it as T     //String
+    inline fun <reified T> parseToListOf(
+        filename: String? = null,
+        rawData: String? = null,
+        delimiter: String = ""
+    ): List<T> =
+        filename?.let {
+            parseLines(filename).map {
+                when (T::class) {
+                    Int::class -> it.toInt() as T
+                    else -> it as T     //String
+                }
             }
-        }
+        } ?: rawData?.let {
+            it.split(delimiter).map { str ->
+                when (T::class) {
+                    Int::class -> str.toInt() as T
+                    else -> it as T     //String
+                }
+            }
+        } ?: throw IllegalArgumentException("no param provided for parse")
 
     inline fun <reified T, reified R> parseToPairList(filename: String, separator: String = " "): List<Pair<T, R>> =
         parseLines(filename).map {
@@ -29,4 +42,20 @@ object Input {
                 }
             )
         }
+
+//    inline fun <reified T> parseToListsOf(filename: String, delimiter: String = ""): List<List<T>> {
+//        val f = parseLines(filename)
+//        println(f)
+//
+//        println(
+//            f.map {
+//                it.split(delimiter).map { i -> if (!i.isBlank()) i.toInt() else i }
+//            }
+//        )
+////            when (val t = T::class) {
+////                Int::class -> it.split(delimiter).map { i -> i.toInt() } as List<T>
+////                else -> it.split(delimiter) as List<T>     //String
+////            }
+//        return listOf()
+//    }
 }
