@@ -36,28 +36,24 @@ fun main() {
     run win@{
         bingoDrawings.forEach { num ->
             for (b in bingoBoards.indices) {
-                var x = -1
-                var y = -1
+                var x: Int
+                var y: Int
 
                 for (row in bingoBoards[b].first.indices) {
                     val col = bingoBoards[b].first[row].indexOf(num)
                     if (col != -1) {   // num found
                         x = row
                         y = col
-                        break
+
+                        // update board pairs with marked space (-1)
+                        bingoBoards[b].first[x][y] = -1
+                        bingoBoards[b].second[y][x] = -1
+
+                        if (isBoardAWinner(bingoBoards[b], x, y)) {
+                            winningBoard = b
+                            return@win  // return outer loop if winner found
+                        }
                     }
-                }
-
-                // update board pairs with marked space (-1)
-                if (x != -1) {
-                    bingoBoards[b].first[x][y] = -1
-                    bingoBoards[b].second[y][x] = -1
-                }
-
-                // check if any board is a winner
-                if (isBoardAWinner(bingoBoards[b])) {
-                    winningBoard = b
-                    return@win  // break if winner
                 }
             }
         }
@@ -67,13 +63,21 @@ fun main() {
         bingoBoards[winningBoard].first.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() })
 }
 
-fun isBoardAWinner(boardPair: Pair<List<MutableList<Int>>, List<MutableList<Int>>>): Boolean {
+fun isBoardAWinner(boardPair: Pair<List<MutableList<Int>>, List<MutableList<Int>>>, row: Int, col: Int): Boolean {
     return when {
-        boardPair.first.any { r -> r.all { c -> c == -1 } } -> true
-        boardPair.second.any { r -> r.all { c -> c == -1 } } -> true
+        boardPair.first[row].all { it == -1 } -> true
+        boardPair.second[col].all { it == -1 } -> true
         else -> false
     }
 }
+
+//fun isBoardAWinner(boardPair: Pair<List<MutableList<Int>>, List<MutableList<Int>>>): Boolean {
+//    return when {
+//        boardPair.first.any { r -> r.all { c -> c == -1 } } -> true
+//        boardPair.second.any { r -> r.all { c -> c == -1 } } -> true
+//        else -> false
+//    }
+//}
 
 fun List<List<String>>.transformTo2D() = this.map { board ->
     board.mapNotNull { line ->
