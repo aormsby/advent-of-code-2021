@@ -4,72 +4,87 @@ import util.CollectionHelper
 import util.Input
 import util.Output
 
-// share size of board across functions
 var boardSize = 0
 
 fun main() {
-    lateinit var bingoDrawings: List<Int>
-    val bingoBoards = mutableListOf<Pair<List<MutableList<Int>>, List<MutableList<Int>>>>()
+    var bingoDrawings: List<Int>
+    var bingoBoards = mutableListOf<BingoBoard>()
 
     // set up number call and board collections
     with(Input.parseLines("/input/d4_bingo_subsystem.txt")) {
         // get bingo drawings as Ints
-        bingoDrawings = Input.parseToListOf(rawData = this[0], delimiter = ",")
+        bingoDrawings = Input.parseToListOf<Int>(rawData = this[0], delimiter = ",")
 
         // get boards as 2d lists
         val tempBoards = with(this.drop(2).chunked(6)) { transformTo2D() }
 
-        // set board size
-        boardSize = tempBoards.first().first().size
-
         // flatten boards and their transposed forms
         tempBoards.forEach { board ->
             bingoBoards.add(
-                Pair(board, CollectionHelper.transposeList(board))
+                BingoBoard(board, CollectionHelper.transposeList(board))
             )
         }
+
+        // set board size
+        boardSize = bingoBoards.first().rows.first().size
     }
 
-    // for storing index of winning board
-    var winningBoard = -1
-    var lastNum = -1
+    // to store board and called number data
+    var firstWinBoard = BingoBoard(listOf(), listOf())
+    var firstWinNum = -1
+    var lastWinBoard = BingoBoard(listOf(), listOf())
+    var lastWinNum = -1
 
-    run win@{
+    run end@{
+        // call numbers
         bingoDrawings.forEach { num ->
-            for (b in bingoBoards.indices) {
-                var x: Int
-                var y: Int
+            // mark boards
+            bingoBoards.forEach {
+                mark(it, num)
 
-                for (row in bingoBoards[b].first.indices) {
-                    val col = bingoBoards[b].first[row].indexOf(num)
-                    if (col != -1) {   // num found
-                        x = row
-                        y = col
-
-                        // update board pairs with marked space (-1)
-                        bingoBoards[b].first[x][y] = -1
-                        bingoBoards[b].second[y][x] = -1
-
-                        if (isWinningBoard(bingoBoards[b], x, y)) {
-                            winningBoard = b
-                            lastNum = num
-                            return@win  // return outer loop if winner found
-                        }
-                    }
+                if (it.isWinner && firstWinBoard.rows.isEmpty()) {
+                    firstWinBoard = BingoBoard(it.rows, it.columns)
+                    firstWinNum = num
                 }
             }
+
+            if (bingoBoards.size == 1 && bingoBoards.first().isWinner) {
+                lastWinBoard = bingoBoards.first()
+                lastWinNum = num
+                return@end
+            }
+            // remove winners from play
+            bingoBoards = bingoBoards.filterNot { it.isWinner }.toMutableList()
         }
     }
 
     Output.part(1, "Winning Board Remainder Sum",
-        bingoBoards[winningBoard].first.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() } * lastNum)
+        firstWinBoard.rows.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() } * firstWinNum)
+
+    Output.part(1, "Winning Board Remainder Sum",
+        lastWinBoard.rows.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() } * lastWinNum)
 }
 
-fun isWinningBoard(boardPair: Pair<List<MutableList<Int>>, List<MutableList<Int>>>, row: Int, col: Int): Boolean {
-    return when {
-        boardPair.first[row].all { it == -1 } -> true
-        boardPair.second[col].all { it == -1 } -> true
-        else -> false
+fun mark(board: BingoBoard, num: Int) {
+    var x = -1
+    var y = -1
+
+    // mark nums
+    for (row in board.rows.indices) {
+        val col = board.rows[row].indexOf(num)
+        if (col != -1) {   // num found
+            x = row
+            y = col
+
+            board.rows[x][y] = -1
+            board.columns[y][x] = -1
+            break
+        }
+    }
+
+    // check if winner
+    if (x != -1) {
+        board.isWinner = board.rows[x].all { it == -1 } || board.columns[y].all { it == -1 }
     }
 }
 
@@ -82,3 +97,9 @@ fun List<List<String>>.transformTo2D() = this.map { board ->
             .map { it.toInt() } as MutableList
     }
 }
+
+data class BingoBoard(
+    val rows: List<MutableList<Int>>,       // rows from input
+    val columns: List<MutableList<Int>>,    // transposed rows
+    var isWinner: Boolean = false           // to mark for removal from game
+)
