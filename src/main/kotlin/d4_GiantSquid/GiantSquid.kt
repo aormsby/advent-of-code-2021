@@ -31,7 +31,8 @@ fun main() {
     }
 
     // for storing index of winning board
-    var winningBoard: Int = -1
+    var winningBoard = -1
+    var lastNum = -1
 
     run win@{
         bingoDrawings.forEach { num ->
@@ -51,6 +52,7 @@ fun main() {
 
                         if (isWinningBoard(bingoBoards[b], x, y)) {
                             winningBoard = b
+                            lastNum = num
                             return@win  // return outer loop if winner found
                         }
                     }
@@ -59,8 +61,8 @@ fun main() {
         }
     }
 
-    Output.part(1, "Winning Board Remainder Sum [CURRENTLY INCORRECT]",
-        bingoBoards[winningBoard].first.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() })
+    Output.part(1, "Winning Board Remainder Sum",
+        bingoBoards[winningBoard].first.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() } * lastNum)
 }
 
 fun isWinningBoard(boardPair: Pair<List<MutableList<Int>>, List<MutableList<Int>>>, row: Int, col: Int): Boolean {
