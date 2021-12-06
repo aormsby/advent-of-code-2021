@@ -12,8 +12,9 @@ private const val DOWN = "down"
 
 fun main() {
     Output.day(2, "Dive!")
+    Output.setStartTime()
 
-    val commands = Input.parseToPairList<String, Int>("/input/d2_navigation_commands.txt")
+    val commands = Input.parseToPairList<String, Int>("/input/d2_navigation_commands.txt", pairDelimiter = " ")
 
     val coordinates = mutableMapOf(
         POSITION to 0,
@@ -50,7 +51,9 @@ fun main() {
         }
     }
 
-    Output.part(1, "Good Coordinates", accurateCoordinates[POSITION]!! * accurateCoordinates[DEPTH]!!)
+    Output.part(2, "Good Coordinates", accurateCoordinates[POSITION]!! * accurateCoordinates[DEPTH]!!)
+
+    Output.executionTime()
 }
 
 // Turns out this was unnecessary... but a great idea!

@@ -7,6 +7,9 @@ import util.Output
 var boardSize = 0
 
 fun main() {
+    Output.day(4, "Giant Squid")
+    Output.setStartTime()
+
     var bingoDrawings: List<Int>
     var bingoBoards = mutableListOf<BingoBoard>()
 
@@ -61,8 +64,10 @@ fun main() {
     Output.part(1, "Winning Board Remainder Sum",
         firstWinBoard.rows.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() } * firstWinNum)
 
-    Output.part(1, "Winning Board Remainder Sum",
+    Output.part(2, "Losing Board Remainder Sum",
         lastWinBoard.rows.fold(0) { acc, list -> acc + list.filterNot { it == -1 }.sum() } * lastWinNum)
+
+    Output.executionTime()
 }
 
 fun mark(board: BingoBoard, num: Int) {

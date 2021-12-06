@@ -28,34 +28,49 @@ object Input {
             }
         } ?: throw IllegalArgumentException("no param provided for parse")
 
-    inline fun <reified T, reified R> parseToPairList(filename: String, separator: String = " "): List<Pair<T, R>> =
+    inline fun <reified T, reified R> parseToPairList(
+        filename: String,
+        pairDelimiter: String = "",
+        itemDelimiter: String = ""
+    ): List<Pair<T, R>> =
         parseLines(filename).map {
-            val l = it.split(separator)
+            val l = it.split(pairDelimiter)
             Pair(
                 when (T::class) {
                     Int::class -> l[0].toInt() as T
+                    Coord::class -> parseToCoord(l[0], delimiter = itemDelimiter) as T
                     else -> l[0] as T   // String
                 },
                 when (R::class) {
                     Int::class -> l[1].toInt() as R
+                    Coord::class -> parseToCoord(l[1], delimiter = itemDelimiter) as R
                     else -> l[1] as R   // String
                 }
             )
         }
 
-//    inline fun <reified T> parseToListsOf(filename: String, delimiter: String = ""): List<List<T>> {
-//        val f = parseLines(filename)
-//        println(f)
-//
-//        println(
-//            f.map {
-//                it.split(delimiter).map { i -> if (!i.isBlank()) i.toInt() else i }
-//            }
-//        )
-////            when (val t = T::class) {
-////                Int::class -> it.split(delimiter).map { i -> i.toInt() } as List<T>
-////                else -> it.split(delimiter) as List<T>     //String
-////            }
-//        return listOf()
+    /**
+     * Returns[Coord] from String
+     * @param c current coordinate to parse
+     */
+    fun parseToCoord(c: String, delimiter: String = ""): Coord =
+        with(c.split(delimiter)) {
+            Coord(x = this[0].toInt(), y = this[1].toInt())
+        }
+
+//    /**
+//     * Returns Pair of [Coord] from String
+//     */
+//    fun parseToCoordPair(
+//        filename: String,
+//        pairDelimiter: String = "",
+//        coordDelimiter: String = ""
+//    ): Pair<Coord, Coord> {
+//        parseLines(filename).map { }
 //    }
 }
+
+data class Coord(
+    val x: Int,
+    val y: Int
+)

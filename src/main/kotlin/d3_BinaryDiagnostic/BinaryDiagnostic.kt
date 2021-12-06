@@ -5,6 +5,7 @@ import util.Output
 
 fun main() {
     Output.day(3, "Binary Diagnostic")
+    Output.setStartTime()
 
     val report = Input.parseLines("/input/d3_diagnostic_report.txt")
     val transposedReport = transposeMatrix(report)
@@ -20,6 +21,8 @@ fun main() {
 
     Output.part(1, "Power Consumption", gamma * epsilonStr)
     Output.part(2, "Life Support Rating", getO2Rating(report) * getCO2Rating(report))
+
+    Output.executionTime()
 }
 
 fun transposeMatrix(list: List<String>): List<MutableList<Char>> {
