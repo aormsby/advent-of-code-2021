@@ -67,5 +67,5 @@ class HydrothermalVenture {
         ventMap.merge(p, 1) { a, b -> a + b }
     }
 
-    fun Coord.simplify(): Coord = Coord(x = 1 * this.x.sign, y = 1 * this.y.sign)
+    fun Coord.simplify(): Coord = Coord(x = this.x.sign, y = this.y.sign)
 }
