@@ -57,20 +57,9 @@ object Input {
         with(c.split(delimiter)) {
             Coord(x = this[0].toInt(), y = this[1].toInt())
         }
-
-//    /**
-//     * Returns Pair of [Coord] from String
-//     */
-//    fun parseToCoordPair(
-//        filename: String,
-//        pairDelimiter: String = "",
-//        coordDelimiter: String = ""
-//    ): Pair<Coord, Coord> {
-//        parseLines(filename).map { }
-//    }
 }
 
 data class Coord(
-    val x: Int,
-    val y: Int
+    var x: Int,
+    var y: Int
 )

@@ -15,6 +15,6 @@ object Output {
     }
 
     fun executionTime() {
-        println("execution time -> ${System.currentTimeMillis() - startTime} milliseconds")
+        println("----- execution time -> ${System.currentTimeMillis() - startTime} milliseconds")
     }
 }
