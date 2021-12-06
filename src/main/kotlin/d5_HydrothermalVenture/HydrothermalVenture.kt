@@ -26,6 +26,7 @@ class HydrothermalVenture {
 
     val ventMap = mutableMapOf<Coord, Int>()
 
+    // reset map between parts
     fun clearMap() = ventMap.clear()
 
     fun numDangerPoints(diags: Boolean = false): Int {
@@ -42,12 +43,11 @@ class HydrothermalVenture {
 
     fun drawLine(c1: Coord, c2: Coord, diags: Boolean): List<Coord> {
         val coordList = mutableListOf<Coord>()
-        var slope = Coord(x = c2.x - c1.x, y = c2.y - c1.y)
+        val slope = Coord(x = c2.x - c1.x, y = c2.y - c1.y).simplify()
 
         // return empty list if skipping diagonals
         if (!diags && slope.x != 0 && slope.y != 0)
             return listOf()
-        else slope = slope.simplify()
 
         coordList.add(c1)
         val cur = Coord(x = c1.x, y = c1.y)
@@ -61,10 +61,5 @@ class HydrothermalVenture {
         return coordList
     }
 
-    fun Coord.simplify(): Coord =
-        when {
-            this.x == 0 -> Coord(x = 0, y = 1 * this.y.sign)  // single space motion for vertical
-            this.y == 0 -> Coord(x = 1 * this.x.sign, y = 0)  // and horizontal lines
-            else -> Coord(x = 1 * this.x.sign, y = 1 * this.y.sign)
-        }
+    fun Coord.simplify(): Coord = Coord(x = 1 * this.x.sign, y = 1 * this.y.sign)
 }
