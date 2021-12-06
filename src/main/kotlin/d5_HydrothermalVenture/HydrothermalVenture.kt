@@ -12,8 +12,7 @@ fun main() {
     val hv = HydrothermalVenture()
 
     Output.part(1, "Dangerous Areas (no diagonals)", hv.numDangerPoints())
-    hv.clearMap()   // reset for Part 2
-    Output.part(2, "Dangerous Areas (diagonals)", hv.numDangerPoints(diags = true))
+    Output.part(2, "Dangerous Areas (diagonals)", hv.numDangerPointsWithDiags())
 
     Output.executionTime()
 }
@@ -25,29 +24,28 @@ class HydrothermalVenture {
     )
 
     val ventMap = mutableMapOf<Coord, Int>()
+    val diagMap = mutableListOf<Coord>()    // stores diagonals until part 2!
 
-    // reset map between parts
-    fun clearMap() = ventMap.clear()
-
-    fun numDangerPoints(diags: Boolean = false): Int {
+    fun numDangerPoints(): Int {
         coordinatePairs.forEach { cPair ->
-            val line = drawLine(cPair.first, cPair.second, diags)
-            line.forEach { point ->
-                // increments value at this point
-                ventMap.merge(point, 1) { a, b -> a + b }
-            }
+            val line = drawLine(cPair.first, cPair.second)
+            line.forEach { point -> updateVentMap(point) }
         }
 
         return ventMap.filter { it.value > 1 }.size
     }
 
-    fun drawLine(c1: Coord, c2: Coord, diags: Boolean): List<Coord> {
+    fun numDangerPointsWithDiags(): Int {
+        diagMap.forEach { point ->
+            updateVentMap(point)
+        }
+
+        return ventMap.filter { it.value > 1 }.size
+    }
+
+    fun drawLine(c1: Coord, c2: Coord): List<Coord> {
         val coordList = mutableListOf<Coord>()
         val slope = Coord(x = c2.x - c1.x, y = c2.y - c1.y).simplify()
-
-        // return empty list if skipping diagonals
-        if (!diags && slope.x != 0 && slope.y != 0)
-            return listOf()
 
         coordList.add(c1)
         val cur = Coord(x = c1.x, y = c1.y)
@@ -58,7 +56,15 @@ class HydrothermalVenture {
             coordList.add(Coord(x = cur.x, y = cur.y))
         }
 
-        return coordList
+        // return empty list if diagonal, but store data for Part 1
+        return if (slope.x != 0 && slope.y != 0) {
+            diagMap.addAll(coordList)
+            return listOf() // avoid adding to ventMap for part 1
+        } else coordList
+    }
+
+    fun updateVentMap(p: Coord) {
+        ventMap.merge(p, 1) { a, b -> a + b }
     }
 
     fun Coord.simplify(): Coord = Coord(x = 1 * this.x.sign, y = 1 * this.y.sign)
