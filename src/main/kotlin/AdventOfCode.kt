@@ -7,4 +7,5 @@ fun main() {
     d3_BinaryDiagnostic.main()
     d4_GiantSquid.main()
     d5_HydrothermalVenture.main()
+    d6_Lanternfish.main()
 }
