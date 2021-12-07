@@ -48,6 +48,6 @@ fun main() {
     }
 
     Output.part(1, "80-day Spawn", earlySpawnCount)
-    Output.part(1, "256-day Spawn", spawnPool.values.sum())
+    Output.part(2, "256-day Spawn", spawnPool.values.sum())
     Output.executionTime()
 }
