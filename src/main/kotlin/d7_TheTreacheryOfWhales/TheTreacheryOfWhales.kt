@@ -11,7 +11,7 @@ fun main() {
     Output.setStartTime()
 
     val crabmarines = Input.parseToListOf<Int>(
-        rawData = Input.parseLine("/input/d7_crabmarine_positions.txt"), delimiter = ","
+        rawData = Input.parseAllText("/input/d7_crabmarine_positions.txt"), delimiter = ","
     )
 
     val median = crabmarines.sorted().median()

@@ -8,4 +8,6 @@ fun main() {
     d4_GiantSquid.main()
     d5_HydrothermalVenture.main()
     d6_Lanternfish.main()
+    d7_TheTreacheryOfWhales.main()
+    d8_SevenSegmentSearch.main()
 }
