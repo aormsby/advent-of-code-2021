@@ -3,6 +3,10 @@ package util
 import java.io.IOException
 
 object Input {
+    fun parseLine(filename: String): String =
+        this.javaClass.getResourceAsStream(filename)?.bufferedReader()?.readText()
+            ?: throw IOException("read input failed")
+
     fun parseLines(filename: String): List<String> =
         this.javaClass.getResourceAsStream(filename)?.bufferedReader()?.readLines()
             ?: throw IOException("read input failed")
