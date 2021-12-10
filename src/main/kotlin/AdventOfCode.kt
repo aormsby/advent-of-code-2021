@@ -10,4 +10,5 @@ fun main() {
     d6_Lanternfish.main()
     d7_TheTreacheryOfWhales.main()
     d8_SevenSegmentSearch.main()
+    d9_SmokeBasin.main()
 }

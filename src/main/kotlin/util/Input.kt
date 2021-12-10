@@ -24,7 +24,7 @@ object Input {
                 }
             }
         } ?: rawData?.let {
-            it.split(delimiter).map { str ->
+            it.split(delimiter).filter { s -> s.isNotBlank() }.map { str ->
                 when (T::class) {
                     Int::class -> str.toInt() as T
                     else -> it as T     //String
@@ -62,8 +62,3 @@ object Input {
             Coord(x = this[0].toInt(), y = this[1].toInt())
         }
 }
-
-data class Coord(
-    var x: Int,
-    var y: Int
-)
