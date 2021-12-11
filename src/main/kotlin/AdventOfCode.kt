@@ -11,4 +11,5 @@ fun main() {
     d7_TheTreacheryOfWhales.main()
     d8_SevenSegmentSearch.main()
     d9_SmokeBasin.main()
+    d10_SyntaxScoring.main()
 }

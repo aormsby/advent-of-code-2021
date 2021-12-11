@@ -20,6 +20,7 @@ object Input {
             parseLines(filename).map {
                 when (T::class) {
                     Int::class -> it.toInt() as T
+                    Char::class -> it.single() as T
                     else -> it as T     //String
                 }
             }
@@ -27,6 +28,7 @@ object Input {
             it.split(delimiter).filter { s -> s.isNotBlank() }.map { str ->
                 when (T::class) {
                     Int::class -> str.toInt() as T
+                    Char::class -> str.single() as T
                     else -> it as T     //String
                 }
             }
