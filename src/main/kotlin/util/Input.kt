@@ -63,4 +63,21 @@ object Input {
         with(c.split(delimiter)) {
             Coord(x = this[0].toInt(), y = this[1].toInt())
         }
+
+    /**
+     * Better parser for simple 2d lists
+     */
+    inline fun <reified T> parseTo2dList(
+        filename: String,
+        delimiter: String = ""
+    ): MutableList<MutableList<T>> =
+        parseLines(filename).map {
+            it.split(delimiter).filter { s -> s.isNotBlank() }.map { str ->
+                when (T::class) {
+                    Int::class -> str.toInt() as T
+                    Char::class -> it.single() as T
+                    else -> it as T     //String
+                }
+            } as MutableList
+        } as MutableList
 }
