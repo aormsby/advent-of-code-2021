@@ -9,12 +9,9 @@ object Output {
         println("Part $i -> $s = $result")
     }
 
-    private var startTime = 0L
-    fun setStartTime() {
-        startTime = System.currentTimeMillis()
-    }
+    fun startTime(): Long = System.currentTimeMillis()
 
-    fun executionTime() {
-        println("----- execution time -> ${System.currentTimeMillis() - startTime} milliseconds")
+    fun executionTime(startTime: Long, label: String = "execution time") {
+        println("----- $label -> ${System.currentTimeMillis() - startTime} milliseconds")
     }
 }

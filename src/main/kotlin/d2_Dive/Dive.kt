@@ -12,7 +12,7 @@ private const val DOWN = "down"
 
 fun main() {
     Output.day(2, "Dive!")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     val commands = Input.parseToPairList<String, Int>("/input/d2_navigation_commands.txt", pairDelimiter = " ")
 
@@ -52,8 +52,7 @@ fun main() {
     }
 
     Output.part(2, "Good Coordinates", accurateCoordinates[POSITION]!! * accurateCoordinates[DEPTH]!!)
-
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 // Turns out this was unnecessary... but a great idea!

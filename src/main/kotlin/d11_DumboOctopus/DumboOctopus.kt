@@ -22,7 +22,7 @@ val nextFlashers = mutableListOf<DumboOctopus>()
 
 fun main() {
     Output.day(11, "Dumbo Octopus")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     var step100Flashes = 0
 
@@ -68,7 +68,7 @@ fun main() {
 
     Output.part(1, "Flashes: 100 Steps", step100Flashes)
     Output.part(2, "All Flash Step", step)
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 data class DumboOctopus(

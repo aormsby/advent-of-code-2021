@@ -8,7 +8,7 @@ import kotlin.math.roundToInt
 
 fun main() {
     Output.day(7, "The Treachery of Whales")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     val crabmarines = Input.parseToListOf<Int>(
         rawData = Input.parseAllText("/input/d7_crabmarine_positions.txt"), delimiter = ","
@@ -28,7 +28,7 @@ fun main() {
     else fuelToAverageFloor
 
     Output.part(2, "Fuel to Align to Average with 'Sum of Integers' Consumption", fuelToAverage)
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 fun List<Int>.median(): Int =

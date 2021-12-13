@@ -75,8 +75,8 @@ object Input {
             it.split(delimiter).filter { s -> s.isNotBlank() }.map { str ->
                 when (T::class) {
                     Int::class -> str.toInt() as T
-                    Char::class -> it.single() as T
-                    else -> it as T     //String
+                    Char::class -> str.single() as T
+                    else -> str as T     //String
                 }
             } as MutableList
         } as MutableList

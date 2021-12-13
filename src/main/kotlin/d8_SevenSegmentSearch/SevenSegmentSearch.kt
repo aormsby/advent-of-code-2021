@@ -5,7 +5,7 @@ import util.Output
 
 fun main() {
     Output.day(8, "Seven Segment Search")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     /*
     // Regex works for P1, but it's slooooooow.
@@ -87,7 +87,7 @@ fun main() {
 
     Output.part(1, "Count of 1s, 4s, 7s, and 8s", uniqueSegmentsFound)
     Output.part(2, "Sum of All Outputs", outputSum)
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 /**

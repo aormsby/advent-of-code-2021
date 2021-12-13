@@ -5,7 +5,7 @@ import util.Output
 
 fun main() {
     Output.day(10, "Syntax Scoring")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     val navSubsystem = Input.parseLines(filename = "/input/d10_syntax_chunks.txt")
         .map { Input.parseToListOf<Char>(rawData = it) } as MutableList
@@ -55,5 +55,5 @@ fun main() {
 
     Output.part(1, "Syntax Error Score", errorMap.map { errorPoints[it.key]!! * it.value }.sum())
     Output.part(2, "Autocomplete Score", autocompleteScores.sorted()[autocompleteScores.size / 2])
-    Output.executionTime()
+    Output.executionTime(startTime)
 }

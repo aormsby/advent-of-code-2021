@@ -5,7 +5,7 @@ import util.Output
 
 fun main() {
     Output.day(6, "Lanternfish")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     // get number of times each day occurs in input
     val initialState = with(Input.parseLines("/input/d6_lanternfish_initial_state.txt")) {
@@ -49,5 +49,5 @@ fun main() {
 
     Output.part(1, "80-day Spawn", earlySpawnCount)
     Output.part(2, "256-day Spawn", spawnPool.values.sum())
-    Output.executionTime()
+    Output.executionTime(startTime)
 }

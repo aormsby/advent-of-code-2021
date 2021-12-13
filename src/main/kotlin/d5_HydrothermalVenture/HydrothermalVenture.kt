@@ -7,14 +7,14 @@ import kotlin.math.sign
 
 fun main() {
     Output.day(5, "Hydrothermal Ventures")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     val hv = HydrothermalVenture()
 
     Output.part(1, "Dangerous Areas (no diagonals)", hv.numDangerPoints())
     Output.part(2, "Dangerous Areas (diagonals)", hv.numDangerPointsWithDiags())
 
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 class HydrothermalVenture {

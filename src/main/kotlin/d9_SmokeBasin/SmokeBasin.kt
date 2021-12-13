@@ -18,7 +18,7 @@ val checkedCoords = mutableListOf<Coord>()
 
 fun main() {
     Output.day(9, "Smoke Basin")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     // Part 1
     val lowPointsMap = mutableMapOf<Coord, Int>()
@@ -47,7 +47,7 @@ fun main() {
 
     Output.part(2, "Sum of Basin Sizes",
         basinMap.values.sorted().takeLast(3).reduce { acc, n -> acc * n })
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 /**

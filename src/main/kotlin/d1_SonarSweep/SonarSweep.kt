@@ -5,14 +5,14 @@ import util.Output
 
 fun main() {
     Output.day(1, "Sonar Sweep")
-    Output.setStartTime()
+    val startTime = Output.startTime()
 
     val depthList = Input.parseToListOf<Int>("/input/d1_sea_floor_depths.txt")
 
     Output.part(1, "Deepenings", depthList.twoWindowSlide())
     Output.part(2, "Sliding Deepenings", depthList.threeWindowSlide())
 
-    Output.executionTime()
+    Output.executionTime(startTime)
 }
 
 fun List<Int>.twoWindowSlide(): Int =
