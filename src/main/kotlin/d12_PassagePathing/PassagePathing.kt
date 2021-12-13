@@ -7,7 +7,7 @@ val upperAlpha = "A".."Z"
 val lowerAlpha = "a".."z"
 
 fun main() {
-    Output.day(11, "Passage Pathing")
+    Output.day(12, "Passage Pathing")
     val startTime = Output.startTime()
 
     val input = Input.parseTo2dList<String>(filename = "/input/d12_path_map.txt", delimiter = "-")
