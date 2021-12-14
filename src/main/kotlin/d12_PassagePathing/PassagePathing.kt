@@ -22,7 +22,8 @@ fun main() {
     }
     caveGraph["end"] = listOf()
 
-    val completePaths = mutableListOf<List<String>>()
+    var completePaths = 0
+    var completePathsNoRepeat = 0
     val curPath = mutableListOf<String>()
 
     val toDoQ = mutableListOf(Pair("start", 0))
@@ -54,7 +55,9 @@ fun main() {
         // if at 'end' or no neighbors left, then save, pop, and continue
         if (curNode.first == "end" || nextIndex >= caveGraph[curNode.first]!!.size) {
             if (curNode.first == "end") {
-                completePaths.add(curPath.toList())
+                completePaths++
+                if (curPath.roomForOneMore())
+                    completePathsNoRepeat++
             }
 
             curPath.removeLast()
@@ -67,8 +70,8 @@ fun main() {
         }
     }
 
-    Output.part(1, "Number of Paths", completePaths.singleCavesOnly().size)
-    Output.part(2, "Number of Longer Paths", completePaths.size)
+    Output.part(1, "Number of Paths", completePathsNoRepeat)
+    Output.part(2, "Number of Longer Paths", completePaths)
 
 //    recursive solution
 //    Output.part(1, "Number of Paths", findAllPaths(caveGraph, "start").size)
@@ -80,16 +83,6 @@ fun MutableList<String>.roomForOneMore(): Boolean {
     val smalls = this.filter { it in lowerAlpha }
     return smalls == smalls.distinct()
 }
-
-fun List<List<String>>.singleCavesOnly(): List<List<String>> =
-    this.filter { list ->
-        var singles = true
-        list.toSet().forEach {
-            if (it in lowerAlpha && list.indexOf(it) != list.lastIndexOf(it))
-                singles = false
-        }
-        singles
-    }
 
 // recursive solution
 //fun findAllPaths(
