@@ -18,6 +18,7 @@ fun main() {
     d10_SyntaxScoring.main()
     d11_DumboOctopus.main()
     d12_PassagePathing.main()
+    d13_TransparentOrigami.main()
 
     println()
     Output.executionTime(startTime = startTime, label = "Total execution time")
