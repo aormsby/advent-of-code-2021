@@ -71,11 +71,12 @@ object Input {
         filename: String,
         delimiter: String = ""
     ): MutableList<MutableList<T>> =
-        parseLines(filename).map {
-            it.split(delimiter).filter { s -> s.isNotBlank() }.map { str ->
+        parseLines(filename).mapIndexed { i, line ->
+            line.split(delimiter).filter { s -> s.isNotBlank() }.mapIndexed { j, str ->
                 when (T::class) {
                     Int::class -> str.toInt() as T
                     Char::class -> str.single() as T
+                    AStarNode::class -> AStarNode(position = Coord(x = i, y = j), cost = str.toInt()) as T
                     else -> str as T     //String
                 }
             } as MutableList
