@@ -1,9 +1,9 @@
 package d15_Chiton
 
-import util.AStarNode
 import util.Coord
 import util.Input
 import util.Output
+import java.util.*
 
 val moveOptions = listOf(
     Coord(x = 0, y = 1),
@@ -13,82 +13,66 @@ val moveOptions = listOf(
 )
 
 fun main() {
-    Output.day(13, "Chiton")
+    Output.day(15, "Chiton")
     val startTime = Output.startTime()
 
-    val chitonMapSmall = Input.parseTo2dList<AStarNode>(filename = "/input/d15_chiton_risk_level.txt")
+    val chitonMap = Input.parseTo2dList<Int>(filename = "/input/d15_chiton_risk_level.txt")
 
-    val lowestPathRisk = findLowestPathRisk(
-        chitonMapSmall,
-        chitonMapSmall.first().first().apply { gValue = 0 },
-        chitonMapSmall.last().last()
+    val safestPath = findSafestPath(
+        chitonMap,
+        Coord(0, 0),
+        Coord(chitonMap.lastIndex, chitonMap.first().lastIndex)
     )
+    Output.part(1, "Lowest Path Total Risk", safestPath)
 
-    Output.part(1, "Lowest Path Total Risk", lowestPathRisk)
-    Output.part(2, "n/a", "n/a")
+    val bigSafestPath = findSafestPath(
+        chitonMap,
+        Coord(0, 0),
+        Coord((chitonMap.size * 5) - 1, (chitonMap.first().size * 5) - 1)
+    )
+    Output.part(2, "Lowest Path Total Risk (Large Map)", bigSafestPath)
+
     Output.executionTime(startTime)
 }
 
-// A* notes...
-// F = G + H
-// G = movement cost from the start node to the current square (so cost + parent G)
-// H = estimated movement cost from the current node to the goal node (already calculated)
-
-fun findLowestPathRisk(
-    searchMap: MutableList<MutableList<AStarNode>>,
-    start: AStarNode,
-    goal: AStarNode
-): Int {
-    val mapEdges = goal.position
-
-    searchMap.forEach { line ->
-        line.forEach { node ->
-            node.hValue = (searchMap.last().last().position - node.position).combine()
-        }
-    }
-
-    val openNodes = mutableListOf(start)
-    val closedNodes = mutableListOf<AStarNode>()
-    var nextNode = openNodes.first()
-
-    while (nextNode != goal) {
-        val curNode = nextNode
-        openNodes.remove(curNode)
-        closedNodes.add(curNode)
-
-        val validNeighbors = curNode.getNeighbors(searchMap, mapEdges).filterNot { it in closedNodes }
-
-        validNeighbors.apply {
-            forEach { node ->
-                val newGValue = node.cost + curNode.gValue!!
-                val newFScore = newGValue + node.hValue!!
-
-                openNodes.find { n -> n == node }?.let {
-                    if (newFScore < it.fScore!!) {
-                        it.parent = curNode.position
-                        it.gValue = newGValue
-                        it.fScore = newFScore
-                    }
-                } ?: run {
-                    node.parent = curNode.position
-                    node.gValue = newGValue
-                    node.fScore = newFScore
-                    openNodes.add(node)
-                }
-            }
-
-            openNodes.sortByDescending { it.fScore }
-            nextNode = openNodes.last()
-        }
-    }
-
-    return nextNode.gValue!!
+class Node(val coord: Coord, val totalRisk: Int) : Comparable<Node> {
+    override fun compareTo(other: Node): Int =
+        this.totalRisk - other.totalRisk
 }
 
-fun AStarNode.getNeighbors(map: MutableList<MutableList<AStarNode>>, edges: Coord): List<AStarNode> =
-    moveOptions.map { it + position }
-        .filter { it.x > -1 && it.x <= edges.x && it.y > -1 && it.y <= edges.y }
-        .map { map[it] }
+fun findSafestPath(
+    curMap: MutableList<MutableList<Int>>,
+    start: Coord,
+    goal: Coord
+): Int {
+    val openNodes = PriorityQueue(listOf(Node(start, 0)))
+    val closedNodes = mutableSetOf<Coord>()
 
-operator fun MutableList<MutableList<AStarNode>>.get(c: Coord) = this[c.x][c.y]
-fun Coord.combine() = x + y
+    while (openNodes.isNotEmpty()) {
+        val curNode = openNodes.poll()
+
+        if (curNode.coord == goal) {
+            return curNode.totalRisk
+        }
+
+        if (curNode.coord !in closedNodes) {
+            closedNodes.add(curNode.coord)
+            curNode.coord
+                .neighbors(xLimit = goal.x, yLimit = goal.y)
+                .forEach { openNodes.offer(Node(it, curNode.totalRisk + curMap[it])) }
+        }
+    }
+
+    // open nodes list is empty
+    error("No path found!")
+}
+
+operator fun MutableList<MutableList<Int>>.get(coord: Coord): Int {
+    // the risk increase by 1 for each new map tile in either direction
+    val xRiskIncrease = coord.x / this.first().size
+    val yRiskIncrease = coord.y / this.size
+
+    val newRisk = this[coord.x % this.size][coord.y % this.first().size] +
+            xRiskIncrease + yRiskIncrease
+    return newRisk.takeIf { it < 10 } ?: (newRisk - 9)
+}

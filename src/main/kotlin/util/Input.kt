@@ -76,7 +76,6 @@ object Input {
                 when (T::class) {
                     Int::class -> str.toInt() as T
                     Char::class -> str.single() as T
-                    AStarNode::class -> AStarNode(position = Coord(x = i, y = j), cost = str.toInt()) as T
                     else -> str as T     //String
                 }
             } as MutableList

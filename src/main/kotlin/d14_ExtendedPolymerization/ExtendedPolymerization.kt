@@ -4,7 +4,7 @@ import util.Input
 import util.Output
 
 fun main() {
-    Output.day(13, "Extended Polymerization")
+    Output.day(14, "Extended Polymerization")
     val startTime = Output.startTime()
 
     // sort input
