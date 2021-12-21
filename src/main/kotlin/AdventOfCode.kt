@@ -21,6 +21,7 @@ fun main() {
     d13_TransparentOrigami.main()
     d14_ExtendedPolymerization.main()
     d15_Chiton.main()
+    d16_PacketDecoder.main()
 
     println()
     Output.executionTime(startTime = startTime, label = "Total execution time")
