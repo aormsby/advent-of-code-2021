@@ -20,24 +20,26 @@ fun main() {
 
     for (step in 1..maxSteps) {
         possibleXVelos.addAll(
-            (1..targetArea[0][1]).filter { n ->
-                (1..step).sumOf {
-                    val x = n - (it - 1)
-                    if (x > 0) x else 0
-                } in targetArea[0][0]..targetArea[0][1]
-            }.map { Pair(step, it) }
+            (1..targetArea[0][1]).mapNotNull { n ->
+                if ((1..step).sumOf {
+                        val x = n - (it - 1)
+                        if (x > 0) x else 0
+                    } in targetArea[0][0]..targetArea[0][1])
+                    Pair(step, n)
+                else null
+            }
         )
 
         possibleYVelos.addAll(
-            (targetArea[1][0]..yMaxVelo).filter { n ->
-                (1..step).sumOf { n - (it - 1) } in targetArea[1][0]..targetArea[1][1]
-            }.map { Pair(step, it) }
+            (targetArea[1][0]..yMaxVelo).mapNotNull { n ->
+                if ((1..step).sumOf { n - (it - 1) } in targetArea[1][0]..targetArea[1][1])
+                    Pair(step, n)
+                else null
+            }
         )
     }
 
     val distinctInitialPairs = possibleYVelos.mapNotNull { y ->
-        if (y.second == 9)
-            print("")
         val x = possibleXVelos.filter { it.first == y.first }
         if (x.isNotEmpty())
             x.map { Pair(it.second, y.second) }
