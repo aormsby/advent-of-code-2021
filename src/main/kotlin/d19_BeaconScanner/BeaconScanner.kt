@@ -1,6 +1,6 @@
 package d19_BeaconScanner
 
-import util.Coord
+import util.Coord3d
 import util.Input
 import util.Output
 
@@ -47,8 +47,8 @@ fun List<String>.toScannerList(): List<Scanner> {
             }
             line.isNotBlank() -> {
                 with(line.split(',').map { it.toInt() }) {
-                    curScanner.allBeacons.add(Coord(this[0], this[1]))
-//                    curScanner.allBeacons.add(Coord3d(this[0], this[1], this[2]))
+//                    curScanner.allBeacons.add(Coord(this[0], this[1]))
+                    curScanner.allBeacons.add(Coord3d(this[0], this[1], this[2]))
                 }
             }
             line.isBlank() -> curScanner.calculateBeaconDistances()
@@ -63,13 +63,14 @@ fun List<String>.toScannerList(): List<Scanner> {
 data class Scanner(
     var which: Int,
 ) {
-    var position: Coord = Coord(0, 0)
+    //    var position: Coord = Coord(0, 0)
+    var position: Coord3d = Coord3d(0, 0, 0)
 
-    //    var position: Coord3d = Coord3d(0, 0, 0)
-    var allBeacons: MutableList<Coord> = mutableListOf()
+    //    var allBeacons: MutableList<Coord> = mutableListOf()
+    var allBeacons: MutableList<Coord3d> = mutableListOf()
 
-    //    var allBeacons: MutableList<Coord3d> = mutableListOf()
-    var orientationShift: Coord = Coord(0, 0)
+    //    var orientation: Coord = Coord(0, 0)
+    var orientation: Coord3d = Coord3d(0, 0, 0)
     var hasShifted: Boolean = false
     val beaconDistances: MutableMap<String, Float> = mutableMapOf()
 
@@ -109,35 +110,73 @@ data class Scanner(
         val scannerToBeacon = listOf(myCoord.second, mySecondCoord).map { it.distanceTo(position) }
         position = otherCoord.second + myCoord.second.opposite()
 
+        val myDupe = Coord3d(myCoord.second.x, myCoord.second.y, myCoord.second.z)
         while (position.distanceTo(otherCoord.second) != scannerToBeacon[0]
             || position.distanceTo(otherSecondCoord) != scannerToBeacon[1]
         ) {
-            rotatePositiveYAxis()
-            position = otherCoord.second + myCoord.second.reorient().opposite()
+            nextOrientation(myDupe)
+            position = otherCoord.second + myDupe.opposite()
         }
 
         // position current scanner based on coord match
         allBeacons = allBeacons.map { it.reorient() + position }.toMutableList()
     }
 
-    // todo: test flipping 2d axes next! (z rotation?)
-    fun rotatePositiveYAxis() {
-        orientationShift += Coord(0, 1)
-    }
-
-    fun Coord.reorient(): Coord {
-        val c = Coord(this.x, this.y)
-        for (i in 1..orientationShift.y) {
-            val temp = c.x
-            c.x = c.y
-            c.y = temp
-            c.x *= -1
+    fun Coord3d.rotate(rx: Boolean, ry: Boolean, rz: Boolean) {
+        if (rx) {
+            val temp = z
+            z = y
+            y = temp
+            z *= -1
         }
-        return c
+
+        if (ry) {
+            val temp = x
+            x = z
+            z = temp
+            x *= -1
+        }
+
+        if (rz) {
+            val temp = x
+            x = y
+            y = temp
+            x *= -1
+        }
     }
 
-    fun findMatchingCoord(keys: List<String>, beaconList: List<Coord>): Pair<Int, Coord> {
-//    fun findMatchingCoord(keys: List<String>, beaconList: List<Coord3d>): Pair<Int, Coord3d> {
+    fun Coord3d.reorient(): Coord3d {
+        for (i in 0..orientation.x) this.rotate(rx = true, ry = false, rz = false)
+        for (i in 0..orientation.y) this.rotate(rx = false, ry = true, rz = false)
+        for (i in 0..orientation.z) this.rotate(rx = false, ry = false, rz = true)
+        return this
+    }
+
+    fun nextOrientation(c: Coord3d) {
+        var rotateX = false
+        var rotateY = false
+        val rotateZ = true
+
+        orientation.z += 1
+
+        if (orientation.z > 3) {
+            orientation.y += 1
+            orientation.z = 0
+            rotateY = true
+        }
+
+        if (orientation.y > 3) {
+            orientation.x += 1
+            orientation.y = 0
+            rotateX = true
+        }
+
+        if (orientation.x > 3) error("couldn't find matching orientation?")
+        c.rotate(rotateX, rotateY, rotateZ)
+    }
+
+    //    fun findMatchingCoord(keys: List<String>, beaconList: List<Coord>): Pair<Int, Coord> {
+    fun findMatchingCoord(keys: List<String>, beaconList: List<Coord3d>): Pair<Int, Coord3d> {
         val indices = keys.flatMap { it.split('_') }.map { it.toInt() }
         val coords = indices.map { beaconList[it] }
 
