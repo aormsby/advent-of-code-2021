@@ -16,26 +16,19 @@ fun main() {
     val unshiftedScanners = scannerList.drop(1).toMutableList()
 
     while (unshiftedScanners.isNotEmpty()) {
-        unshiftedScanners.forEach { s ->
+        unshiftedScanners.forEach shifted@{ s ->
             shiftedScanners.forEach { s2 ->
                 if (s != s2) {
                     s.findOverlapsWith(s2)
-                    if (s.hasShifted) {
-                        shiftedScanners.add(s)
-                        unshiftedScanners.remove(s)
-                    }
+                    if (s.hasShifted) return@shifted
                 }
             }
         }
-    }
 
-//    // todo: must reposition a match with 0 before anything else, probably start with a list of scanners ordered based on 0
-//    scannerList.forEach { s ->
-//        scannerList.forEach { s2 ->
-//            // todo: only compare if other scanner has shifted? or something like that.
-//            if (s != s2) s.findOverlapsWith(s2)
-//        }
-//    }
+        val newShifts = unshiftedScanners.filter { it.hasShifted }
+        shiftedScanners.addAll(newShifts)
+        newShifts.forEach { unshiftedScanners.remove(it) }
+    }
 
     Output.part(1, "n/a", "n/a")
     Output.part(2, "n/a", "n/a")
@@ -55,6 +48,7 @@ fun List<String>.toScannerList(): List<Scanner> {
             line.isNotBlank() -> {
                 with(line.split(',').map { it.toInt() }) {
                     curScanner.allBeacons.add(Coord(this[0], this[1]))
+//                    curScanner.allBeacons.add(Coord3d(this[0], this[1], this[2]))
                 }
             }
             line.isBlank() -> curScanner.calculateBeaconDistances()
@@ -70,14 +64,14 @@ data class Scanner(
     var which: Int,
 ) {
     var position: Coord = Coord(0, 0)
-    val allBeacons: MutableList<Coord> = mutableListOf()
 
-    //    val overlapMap: MutableMap<Coord, Coord> = mutableMapOf()
-//    val orientationShift: Coord = Coord(0, 0)
+    //    var position: Coord3d = Coord3d(0, 0, 0)
+    var allBeacons: MutableList<Coord> = mutableListOf()
+
+    //    var allBeacons: MutableList<Coord3d> = mutableListOf()
+//    var orientationShift: Coord = Coord(0, 0)
     var hasShifted: Boolean = false
     val beaconDistances: MutableMap<String, Float> = mutableMapOf()
-    // 'which' other scanner || my matching, other matching
-//    val overlapMap: MutableMap<Int, List<Pair<Int, Int>>> = mutableMapOf()
 
     fun calculateBeaconDistances() {
         allBeacons.forEachIndexed { i, c1 ->
@@ -100,21 +94,46 @@ data class Scanner(
     }
 
     fun orientScanner(myMatches: Map<String, Float>, otherMatches: Map<String, Float>, other: Scanner) {
-        val myfirstKeys = myMatches.entries.sortedBy { it.value }.take(2).map { it.key }
+        val mySortedMatches = myMatches.entries.sortedBy { it.value }.take(2)
+        val myfirstKeys = mySortedMatches.map { it.key }
         val otherFirstKeys = otherMatches.entries.sortedBy { it.value }.take(2).map { it.key }
 
         val myCoord = findMatchingCoord(myfirstKeys, allBeacons)
         val otherCoord = findMatchingCoord(otherFirstKeys, other.allBeacons)
 
         // todo: orient scanner here
+//        val scannerToBeacon = position.distanceTo(allBeacons[myCoord.first])
+//        var myCoordOpposite = myCoord.second.opposite()
+//        while ((otherCoord.second + myCoordOpposite).distanceTo(otherCoord.second) != mySortedMatches.first().value) {
+//            rotateRight()
+//            myCoordOpposite = myCoord.second.reorient().opposite()
+//        }
 
         // position current scanner based on coord match
+//        val beaconDiff = myCoord.second.diffWith(otherCoord.second)
         position = otherCoord.second + myCoord.second.opposite()
+        allBeacons = allBeacons.map { it + position }.toMutableList()
 
         println()
     }
 
+//    fun rotateRight() {
+//        orientationShift += Coord(1, 0)
+//    }
+
+//    fun Coord.reorient(): Coord {
+//        val c = this
+//        for (i in 1..orientationShift.x) {
+//            val temp = c.x
+//            c.x = c.y
+//            c.y = temp
+//            c.x *= -1
+//        }
+//        return c
+//    }
+
     fun findMatchingCoord(keys: List<String>, beaconList: List<Coord>): Pair<Int, Coord> {
+//    fun findMatchingCoord(keys: List<String>, beaconList: List<Coord3d>): Pair<Int, Coord3d> {
         val indices = keys.flatMap { it.split('_') }.map { it.toInt() }
         val coords = indices.map { beaconList[it] }
 

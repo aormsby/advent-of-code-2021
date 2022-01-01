@@ -54,7 +54,7 @@ data class Coord(
         ((x - c.x).toFloat()).pow(2) + ((y - c.y).toFloat()).pow(2)
     )
 
-    //    fun diffWith(c: Coord): Coord = Coord(x - c.x, y - c.y)
+    fun diffWith(c: Coord): Coord = Coord(c.x - x, c.y - y)
     fun opposite(): Coord = Coord(x * -1, y * -1)
 
     override fun toString(): String = "($x, $y)"
@@ -69,5 +69,8 @@ data class Coord3d(
         ((x - c.x).toFloat()).pow(2) + ((y - c.y).toFloat()).pow(2) + ((z - c.z).toFloat()).pow(2)
     )
 
+    fun opposite(): Coord3d = Coord3d(x * -1, y * -1, z * -1)
+
+    operator fun plus(c: Coord3d) = Coord3d(x = x + c.x, y = y + c.y, z = z + c.z)
     override fun toString(): String = "($x, $y, $z)"
 }
