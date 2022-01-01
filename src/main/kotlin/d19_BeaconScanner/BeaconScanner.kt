@@ -69,7 +69,7 @@ data class Scanner(
     var allBeacons: MutableList<Coord> = mutableListOf()
 
     //    var allBeacons: MutableList<Coord3d> = mutableListOf()
-//    var orientationShift: Coord = Coord(0, 0)
+    var orientationShift: Coord = Coord(0, 0)
     var hasShifted: Boolean = false
     val beaconDistances: MutableMap<String, Float> = mutableMapOf()
 
@@ -99,38 +99,42 @@ data class Scanner(
         val otherFirstKeys = otherMatches.entries.sortedBy { it.value }.take(2).map { it.key }
 
         val myCoord = findMatchingCoord(myfirstKeys, allBeacons)
-        val otherCoord = findMatchingCoord(otherFirstKeys, other.allBeacons)
+        val mySecondCoord = allBeacons[myfirstKeys.first()
+            .split('_').map { it.toInt() }.first { it != myCoord.first }]
 
-        // todo: orient scanner here
-//        val scannerToBeacon = position.distanceTo(allBeacons[myCoord.first])
-//        var myCoordOpposite = myCoord.second.opposite()
-//        while ((otherCoord.second + myCoordOpposite).distanceTo(otherCoord.second) != mySortedMatches.first().value) {
-//            rotateRight()
-//            myCoordOpposite = myCoord.second.reorient().opposite()
-//        }
+        val otherCoord = findMatchingCoord(otherFirstKeys, other.allBeacons)
+        val otherSecondCoord = other.allBeacons[otherFirstKeys.first()
+            .split('_').map { it.toInt() }.first { it != otherCoord.first }]
+
+        val scannerToBeacon = listOf(myCoord.second, mySecondCoord).map { it.distanceTo(position) }
+        position = otherCoord.second + myCoord.second.opposite()
+
+        while (position.distanceTo(otherCoord.second) != scannerToBeacon[0]
+            || position.distanceTo(otherSecondCoord) != scannerToBeacon[1]
+        ) {
+            rotatePositiveYAxis()
+            position = otherCoord.second + myCoord.second.reorient().opposite()
+        }
 
         // position current scanner based on coord match
-//        val beaconDiff = myCoord.second.diffWith(otherCoord.second)
-        position = otherCoord.second + myCoord.second.opposite()
-        allBeacons = allBeacons.map { it + position }.toMutableList()
-
-        println()
+        allBeacons = allBeacons.map { it.reorient() + position }.toMutableList()
     }
 
-//    fun rotateRight() {
-//        orientationShift += Coord(1, 0)
-//    }
+    // todo: test flipping 2d axes next! (z rotation?)
+    fun rotatePositiveYAxis() {
+        orientationShift += Coord(0, 1)
+    }
 
-//    fun Coord.reorient(): Coord {
-//        val c = this
-//        for (i in 1..orientationShift.x) {
-//            val temp = c.x
-//            c.x = c.y
-//            c.y = temp
-//            c.x *= -1
-//        }
-//        return c
-//    }
+    fun Coord.reorient(): Coord {
+        val c = Coord(this.x, this.y)
+        for (i in 1..orientationShift.y) {
+            val temp = c.x
+            c.x = c.y
+            c.y = temp
+            c.x *= -1
+        }
+        return c
+    }
 
     fun findMatchingCoord(keys: List<String>, beaconList: List<Coord>): Pair<Int, Coord> {
 //    fun findMatchingCoord(keys: List<String>, beaconList: List<Coord3d>): Pair<Int, Coord3d> {
