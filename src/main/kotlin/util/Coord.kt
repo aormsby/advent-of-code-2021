@@ -1,5 +1,8 @@
 package util
 
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 data class Coord(
     var x: Int,
     var y: Int
@@ -46,4 +49,22 @@ data class Coord(
 
         return neighbors(xLimit, yLimit) + n
     }
+
+    fun distanceTo(c: Coord): Float = sqrt(
+        ((x - c.x).toFloat()).pow(2) + ((y - c.y).toFloat()).pow(2)
+    )
+
+    override fun toString(): String = "($x, $y)"
+}
+
+data class Coord3d(
+    var x: Int,
+    var y: Int,
+    var z: Int
+) {
+    fun distanceTo(c: Coord3d): Float = sqrt(
+        ((x - c.x).toFloat()).pow(2) + ((y - c.y).toFloat()).pow(2) + ((z - c.z).toFloat()).pow(2)
+    )
+
+    override fun toString(): String = "($x, $y, $z)"
 }
