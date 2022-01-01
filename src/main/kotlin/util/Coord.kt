@@ -54,6 +54,9 @@ data class Coord(
         ((x - c.x).toFloat()).pow(2) + ((y - c.y).toFloat()).pow(2)
     )
 
+    //    fun diffWith(c: Coord): Coord = Coord(x - c.x, y - c.y)
+    fun opposite(): Coord = Coord(x * -1, y * -1)
+
     override fun toString(): String = "($x, $y)"
 }
 

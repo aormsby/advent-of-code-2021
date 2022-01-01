@@ -24,6 +24,7 @@ fun main() {
     d16_PacketDecoder.main()
     d17_TrickShot.main()
     d18_Snailfish.main()
+    d19_BeaconScanner.main()
 
     println()
     Output.executionTime(startTime = startTime, label = "Total execution time")
