@@ -51,6 +51,10 @@ data class Coord(
         return neighbors(xLimit, yLimit) + n
     }
 
+    fun allNeighborsWithSelf(xLimit: Int = -1, yLimit: Int = -1): List<Coord> {
+        return allNeighbors(xLimit, yLimit) + listOf(Coord(x, y))
+    }
+
     fun distanceTo(c: Coord): Float = sqrt(
         ((x - c.x).toFloat()).pow(2) + ((y - c.y).toFloat()).pow(2)
     )
