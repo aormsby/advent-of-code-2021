@@ -40,7 +40,7 @@ fun main() {
     }
 
     Output.part(1, "Number Lit, 2 Steps", twoStepLit)
-    Output.part(1, "Number Lit, 50 Steps", fiftyStepLit)
+    Output.part(2, "Number Lit, 50 Steps", fiftyStepLit)
     Output.executionTime(startTime)
 }
 

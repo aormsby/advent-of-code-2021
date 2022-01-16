@@ -26,6 +26,7 @@ fun main() {
     d18_Snailfish.main()
     d19_BeaconScanner.main()
     d20_TrenchMap.main()
+    d21_DiracDice.main()
 
     println()
     Output.executionTime(startTime = startTime, label = "Total execution time")
