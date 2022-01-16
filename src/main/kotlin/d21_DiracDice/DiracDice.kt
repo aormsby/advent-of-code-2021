@@ -2,8 +2,9 @@ package d21_DiracDice
 
 import util.Input
 import util.Output
+import kotlin.math.max
 
-val possibleRollMap = mapPossibleRolls()
+val possibleDiracRolls = mapPossibleRolls()
 
 fun main() {
     Output.day(21, "Dirac Dice")
@@ -39,13 +40,18 @@ fun main() {
         PlayerDirac(startPosition = startPositions[1])
     )
 
-    diracPlayers[0].play(true)
-    diracPlayers[1].play(false)
+    diracPlayers[0].play()
+    diracPlayers[1].play()
 
-    val p1Wins = diracPlayers[0].winLossMap.map { it.value * diracPlayers[1].winLossMap[it.key - 1]!! }.sum()
+    println(diracPlayers[0].lossMap)
+    println(diracPlayers[1].winMap)
 
-    Output.part(2, "P1 Possible Wins", p1Wins)
+    val p1Wins = diracPlayers[0].winMap.map { it.value * diracPlayers[1].lossMap[it.key - 1]!! }.sum()
+    val p2Wins = diracPlayers[1].winMap.map { it.value * (diracPlayers[0].lossMap[it.key] ?: 0) }.sum()
+
+    Output.part(2, "Most Possible Wins", max(p1Wins, p2Wins))
     // endregion
+
     Output.executionTime(startTime)
 }
 
@@ -99,27 +105,15 @@ fun mapPossibleRolls(): Map<Int, Int> {
         rolls.add(next)
     }
 
-    return rolls.groupingBy { it.sum() }.eachCount()//.entries.associateBy({ it.key }, { it.value * 3 })
+    return rolls.groupingBy { it.sum() }.eachCount()
 }
 
-fun MutableSet<MutableList<Int>>.addPossibleRolls(possibilities: Set<Int>): MutableSet<MutableList<Int>> {
-    val newRolls = mutableSetOf<MutableList<Int>>()
-
-    possibilities.forEach { d ->
-        forEach {
-            newRolls.add((it + d) as MutableList)
-        }
-    }
-
-    return newRolls
-}
-
-// todo: collect both wins and losses for each player
 class PlayerDirac(
     val startPosition: Int,
-    val winLossMap: MutableMap<Int, Long> = mutableMapOf() //key=turn, value = numWins
+    val winMap: MutableMap<Int, Long> = mutableMapOf(), //key=turn, value = numWins
+    val lossMap: MutableMap<Int, Long> = mutableMapOf()
 ) {
-    fun scoreRollPermutation(rolls: List<Int>): Int {
+    private fun scoreRollPermutation(rolls: List<Int>): Int {
         var position = startPosition
         var score = 0
 
@@ -134,44 +128,40 @@ class PlayerDirac(
         return score
     }
 
-    fun play(checksWins: Boolean) {
-        var rollSets = possibleRollMap.keys.map { mutableListOf(it) }.toMutableSet()
+    fun play() {
+        var rollSets = possibleDiracRolls.keys.map { mutableListOf(it) }.toMutableSet()
         var turn = 1
 
         while (rollSets.isNotEmpty()) {
             // increment turn
             turn++
 
-            // to store winning/losing roll sets for removals
-            val winLossSets = mutableSetOf<MutableList<Int>>()
+            // to store winning roll sets for removal
+            val turnWinSets = mutableSetOf<MutableList<Int>>()
 
-            // todo: add rolls and calculate wins at the same time, fewer loops
-            // add next possible roll info
-            rollSets = rollSets.addPossibleRolls(possibleRollMap.keys)
+            // next permutation
+            val newRolls = mutableSetOf<MutableList<Int>>()
 
-            rollSets.forEach {
-                val keep = when {
-                    checksWins -> scoreRollPermutation(it) > 20
-                    else -> scoreRollPermutation(it) < 21
-                }
+            rollSets.forEach { prev ->
+                possibleDiracRolls.keys.forEach { poss ->
+                    val curRoll = (prev + poss) as MutableList
+                    newRolls.add(curRoll)
 
-                if (keep) {
-                    // calculate paths to result and store
-                    addWinLoss(turn, it)
-
-                    // store for subtraction from set
-                    winLossSets.add(it)
+                    if (scoreRollPermutation(curRoll) > 20) {
+                        addWinLoss(winMap, turn, curRoll)
+                        turnWinSets.add(curRoll)
+                    } else {
+                        addWinLoss(lossMap, turn, curRoll)
+                    }
                 }
             }
 
-            if (checksWins) rollSets -= winLossSets
-            else rollSets = winLossSets
+            rollSets = (newRolls - turnWinSets) as MutableSet
         }
     }
 
-    // add win for p1, loss for p2 on given turn
-    fun addWinLoss(turn: Int, rolls: List<Int>) {
-        val n = rolls.map { possibleRollMap[it]!! }.reduce { acc, cur -> acc * cur }.toLong()
-        winLossMap.merge(turn, n) { a, b -> a + b }
+    private fun addWinLoss(which: MutableMap<Int, Long>, turn: Int, rolls: List<Int>) {
+        val n = rolls.map { possibleDiracRolls[it]!! }.reduce { acc, cur -> acc * cur }.toLong()
+        which.merge(turn, n) { a, b -> a + b }
     }
 }
