@@ -27,6 +27,7 @@ fun main() {
     d19_BeaconScanner.main()
     d20_TrenchMap.main()
     d21_DiracDice.main()
+    d22_ReactorReboot.main()
 
     println()
     Output.executionTime(startTime = startTime, label = "Total execution time")
